@@ -1,3 +1,5 @@
+Hi, **Chris**.  Use the option `{pageOver: $('#main-content-div')}` for your purposes.
+
 # pagePiling.js
 
 ![preview](https://raw.github.com/alvarotrigo/pagePiling.js/master/examples/imgs/pagePiling-plugin.png)
