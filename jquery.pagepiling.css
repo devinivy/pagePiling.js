@@ -21,7 +21,7 @@ body {
     overflow: hidden;
 }
 body.pageover.pageover-done {
-    overflow: auto;
+    overflow: visible;
 }
 body.pageover .pp-po-container {
     height: 0%;
