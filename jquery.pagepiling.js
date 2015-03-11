@@ -249,6 +249,7 @@
         function pageUnder() {
             $('body').removeClass('pageover-done pageover');
             scrollPage($('.pp-section').last());
+            lastAnimation = new Date().getTime();
         }
 
         
@@ -619,7 +620,7 @@
                         (e.wheelDelta || -e.deltaY || -e.detail)));
                 
                 
-                if (options.pageOver && main && main.is(e.target)) {
+                if (options.pageOver && main && main.is(this)) {
                     
                     // Scrolling up
                     if (delta > 0 && $(document).scrollTop() == 0) {
@@ -837,7 +838,7 @@
                         //is the movement greater than the minimum resistance to scroll?
                         if (Math.abs(touchStartX - touchEndX) > (container.width() / 100 * options.touchSensitivity)) {
                             
-                            if (options.pageOver && main && main.is(e.target)) {
+                            if (options.pageOver && main && main.is(this)) {
                                 
                                 // Scrolling up
                                 if (touchEndX > touchStartX) {
@@ -857,7 +858,7 @@
                     } else {
                         if (Math.abs(touchStartY - touchEndY) > (container.height() / 100 * options.touchSensitivity)) {
                             
-                            if (options.pageOver && main && main.is(e.target)) {
+                            if (options.pageOver && main && main.is(this)) {
                                 
                                 // Scrolling up
                                 if (touchEndY > touchStartY) {
