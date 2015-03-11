@@ -47,7 +47,7 @@
             sectionSelector: '.section',
             animateAnchor: false,
             pageOver: false,
-            
+
             //events
             afterLoad: null,
             onLeave: null,
@@ -125,13 +125,13 @@
             }
 
             if (next.length) {
-                
+
                 scrollPage(next);
             } else if (options.pageOver) {
-                
+
                 pageOver();
             }
-            
+
         };
 
         /**
@@ -229,30 +229,30 @@
         }
 
         function pageOver() {
-            
+
             $('body').addClass('pageover');
-            
+
             container.on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", transitionEnder);
-            
+
             var timeNow = new Date().getTime();
             lastAnimation = timeNow;
-            
+
             activateNavDots(false, $('.pp-section').length);
-            
+
             function transitionEnder(e) {
                 container.off("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", transitionEnder);
                 $('body').addClass('pageover-done');
                 scrollPage($('.pp-section').last(), false, true);
             }
         }
-        
+
         function pageUnder() {
             $('body').removeClass('pageover-done pageover');
             scrollPage($('.pp-section').last());
             lastAnimation = new Date().getTime();
         }
 
-        
+
        /**
         * Retuns `up` or `down` depending on the scrolling movement to reach its destination
         * from the current section.
@@ -287,11 +287,11 @@
                 if (!quietly) activateNavDots(v.anchorLink, v.sectionIndex);
                 return;
             }
-            
+
             if ($('body').hasClass('pageover') && !quietly) {
                 $('body').removeClass('pageover-done pageover');
             }
-            
+
             if(typeof v.animated === 'undefined'){
                 v.animated = true;
             }
@@ -618,24 +618,23 @@
                 e = window.event || e;
                 var delta = Math.max(-1, Math.min(1,
                         (e.wheelDelta || -e.deltaY || -e.detail)));
-                
-                
+
                 if (options.pageOver && main && main.is(this)) {
-                    
+
                     // Scrolling up
                     if (delta > 0 && $(document).scrollTop() == 0) {
                         pageUnder();
                     }
-                    
+
                 } else {
-                    
+
                     var activeSection = $('.pp-section.active');
                     var scrollable = isScrollable(activeSection);
-                    
+
                     //scrolling down?
                     if (delta < 0) {
                         scrolling('down', scrollable);
-    
+
                     //scrolling up?
                     }else {
                         scrolling('up', scrollable);
@@ -689,21 +688,21 @@
         */
         function removeMouseWheelHandler(){
             if (container.get(0).addEventListener) {
-                
+
                 container.get(0).removeEventListener('mousewheel', MouseWheelHandler, false); //IE9, Chrome, Safari, Oper
                 container.get(0).removeEventListener('wheel', MouseWheelHandler, false); //Firefox
-                
+
                 if (options.pageOver && main) {
                     main.get(0).removeEventListener('mousewheel', MouseWheelHandler, false); //IE9, Chrome, Safari, Oper
                     main.get(0).removeEventListener('wheel', MouseWheelHandler, false); //Firefox
                 }
-                
+
             } else {
-                
+
                 if (options.pageOver && main) {
                     main.get(0).detachEvent("onmousewheel", MouseWheelHandler); //IE 6/7/8
                 }
-                
+
             }
         }
 
@@ -713,23 +712,23 @@
         */
         function addMouseWheelHandler(){
             if (container.get(0).addEventListener) {
-                
+
                 container.get(0).addEventListener("mousewheel", MouseWheelHandler, false); //IE9, Chrome, Safari, Oper
                 container.get(0).addEventListener("wheel", MouseWheelHandler, false); //Firefox
-            
+
                 if (options.pageOver && main) {
                     main.get(0).addEventListener("mousewheel", MouseWheelHandler, false); //IE9, Chrome, Safari, Oper
                     main.get(0).addEventListener("wheel", MouseWheelHandler, false); //Firefox
                 }
 
             } else {
-                
+
                 container.get(0).attachEvent("onmousewheel", MouseWheelHandler); //IE 6/7/8
-            
+
                 if (options.pageOver && main) {
                     main.get(0).attachEvent("onmousewheel", MouseWheelHandler); //IE 6/7/8
                 }
-                
+
             }
         }
 
@@ -743,6 +742,12 @@
 
                 container.off('touchstart ' +  MSPointer.down).on('touchstart ' + MSPointer.down, touchStartHandler);
                 container.off('touchmove ' + MSPointer.move).on('touchmove ' + MSPointer.move, touchMoveHandler);
+            
+                if (options.pageOver && main) {
+                    main.off('touchstart ' +  MSPointer.down).on('touchstart ' + MSPointer.down, touchStartHandler);
+                    main.off('touchmove ' + MSPointer.move).on('touchmove ' + MSPointer.move, touchMoveHandler);
+                }
+            
             }
         }
 
@@ -756,6 +761,12 @@
 
                 container.off('touchstart ' + MSPointer.down);
                 container.off('touchmove ' + MSPointer.move);
+                
+                if (options.pageOver && main) {
+                    main.off('touchstart ' +  MSPointer.down);
+                    main.off('touchmove ' + MSPointer.move);
+                }
+                
             }
         }
 
@@ -821,8 +832,10 @@
 
             // additional: if one of the normalScrollElements isn't within options.normalScrollElementTouchThreshold hops up the DOM chain
             if ( !checkParentForNormalScrollElement(event.target) && isReallyTouch(e) ) {
-                event.preventDefault();
-
+                if (!(options.pageOver && main && main.is(this))) {
+                    event.preventDefault();
+                }
+                
                 var activeSection = $('.pp-section.active');
                 var scrollable = isScrollable(activeSection);
 
@@ -837,36 +850,36 @@
                     if (options.direction === 'horizontal' && Math.abs(touchStartX - touchEndX) > (Math.abs(touchStartY - touchEndY))) {
                         //is the movement greater than the minimum resistance to scroll?
                         if (Math.abs(touchStartX - touchEndX) > (container.width() / 100 * options.touchSensitivity)) {
-                            
+
                             if (options.pageOver && main && main.is(this)) {
-                                
+
                                 // Scrolling up
-                                if (touchEndX > touchStartX) {
+                                if (touchEndX > touchStartX && $(document).scrollTop() == 0) {
                                     pageUnder();
                                 }
-                                
+
                             } else {
-                            
+
                                 if (touchStartX > touchEndX) {
                                     scrolling('down', scrollable);
                                 } else if (touchEndX > touchStartX) {
                                     scrolling('up', scrollable);
                                 }
-                                
+
                             }
                         }
                     } else {
                         if (Math.abs(touchStartY - touchEndY) > (container.height() / 100 * options.touchSensitivity)) {
-                            
+
                             if (options.pageOver && main && main.is(this)) {
-                                
+
                                 // Scrolling up
-                                if (touchEndY > touchStartY) {
+                                if (touchEndY > touchStartY && $(document).scrollTop() == 0) {
                                     pageUnder();
                                 }
-                                
+
                             } else {
-                            
+
                                 if (touchStartY > touchEndY) {
                                     scrolling('down', scrollable);
                                 } else if (touchEndY > touchStartY) {
@@ -926,11 +939,11 @@
 
                 nav.find('ul').append('<li data-tooltip="' + tooltip + '"><a href="#' + link + '"><span></span></a></li>');
             }
-            
+
             if (options.pageOver) {
                 nav.find('ul').append('<li data-tooltip=""><a href="#"><span></span></a></li>');
             }
-            
+
             nav.find('span').css('border-color', options.navigation.bulletsColor);
         }
 
@@ -940,13 +953,13 @@
         $(document).on('click touchstart', '#pp-nav a', function(e){
             e.preventDefault();
             var index = $(this).parent().index();
-            
+
             if (options.pageOver && $('.pp-section').length <= index) {
                 pageOver();
             } else {
                 scrollPage($('.pp-section').eq(index));
             }
-            
+
         });
 
         /**
